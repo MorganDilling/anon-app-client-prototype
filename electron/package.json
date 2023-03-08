@@ -1,6 +1,7 @@
 {
   "name": "anon-electron",
   "productName": "AnonApp",
+  "description": "AnonApp",
   "version": "1.0.0",
   "main": ".webpack/main",
   "scripts": {
