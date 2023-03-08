@@ -2,8 +2,52 @@ name: Build and Test
 on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  build-ubuntu:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.28.0
+      
+      - name: Install dependencies
+        run: |
+          pnpm i
+
+      - name: Upgrade dependencies
+        run: |
+          pnpm upgrade-deps:l
+      
+      - name: Build project
+        run: |
+          pnpm build
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.28.0
+      
+      - name: Install dependencies
+        run: |
+          pnpm i
+
+      - name: Upgrade dependencies
+        run: |
+          pnpm upgrade-deps:l
+      
+      - name: Build project
+        run: |
+          pnpm build
+  build-macos:
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
