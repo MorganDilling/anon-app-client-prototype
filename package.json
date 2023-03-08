@@ -13,6 +13,7 @@
     "upgrade-deps:l": "pnpm upgrade -L && cd svelte && pnpm upgrade -L && cd ../electron && pnpm upgrade -L"
   },
   "keywords": [],
+  "author": "Morgan Dilling",
   "contributors": [
     "Expo",
     "Morgan Dilling"

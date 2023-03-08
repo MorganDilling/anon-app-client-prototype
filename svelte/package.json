@@ -1,6 +1,11 @@
 {
   "name": "anon-svelte",
   "description": "AnonApp",
+  "author": "Morgan Dilling",
+  "contributors": [
+    "Morgan Dilling",
+    "Expo"
+  ],
   "version": "0.0.1",
   "private": true,
   "scripts": {

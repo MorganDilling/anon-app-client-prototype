@@ -12,6 +12,7 @@
     "lint": "eslint --ext .ts,.tsx ."
   },
   "keywords": [],
+  "author": "Morgan Dilling",
   "contributors": [
     "Expo",
     "Morgan Dilling"
