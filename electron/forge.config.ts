@@ -10,12 +10,18 @@ import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
 
 const config: ForgeConfig = {
-  packagerConfig: {},
+  packagerConfig: {
+    executableName: 'AnonApp',
+  },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin', 'linux']),
-    new MakerDeb({}),
+    new MakerDeb({
+      options: {
+        bin: 'AnonApp',
+      },
+    }),
     new MakerDMG(/*{ format: 'ULFO' }*/),
   ],
   plugins: [
