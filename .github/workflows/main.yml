@@ -10,9 +10,6 @@ jobs:
       
       - name: Install pnpm
         uses: pnpm/action-setup@v2
-        with:
-          pnpm-version: 'latest'
-          registry: 'https://registry.npmjs.org'
       
       - name: Install dependencies
         run: |
