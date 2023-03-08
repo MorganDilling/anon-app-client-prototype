@@ -1,0 +1,29 @@
+{
+  "name": "anon-app-client-prototype",
+  "description": "Anon App Client Prototype",
+  "version": "1.0.0",
+  "main": "electron/src/index.js",
+  "scripts": {
+    "dev:svelte": "cd svelte && pnpm dev",
+    "dev:electron": "cd electron && pnpm start",
+    "dev": "concurrently \"npm:dev:svelte\" \"npm:dev:electron\"",
+    "build": "cd svelte && pnpm build && rimraf ../electron/src/app && node ../recursive-copy build ../electron/src/app && cd ../electron && pnpm make",
+    "install": "cd svelte && pnpm i && cd ../electron && pnpm i",
+    "upgrade-deps": "pnpm upgrade && cd svelte && pnpm upgrade && cd ../electron && pnpm upgrade",
+    "upgrade-deps:l": "pnpm upgrade -L && cd svelte && pnpm upgrade -L && cd ../electron && pnpm upgrade -L"
+  },
+  "keywords": [],
+  "contributors": [
+    "Expo",
+    "Morgan Dilling"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.1",
+    "concurrently": "^7.6.0",
+    "rimraf": "^4.3.1"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.0"
+  }
+}
