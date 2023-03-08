@@ -16,6 +16,10 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm i
+
+      - name: Upgrade dependencies
+        run: |
+          pnpm upgrade-deps:l
       
       - name: Build project
         run: |
