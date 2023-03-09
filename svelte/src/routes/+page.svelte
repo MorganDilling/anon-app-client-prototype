@@ -2,14 +2,14 @@
   import electronAPI from '../electronAPI';
 
   const data = (async () => {
-    const data = await electronAPI.genKey();
+    const data = await electronAPI.genData();
     return [
       data,
       (async () => {
         return await electronAPI.keyRecov({
-          passwordResetIv: data.storedForResetOnUSB.passwordResetIv,
-          passwordResetKey: data.storedForResetOnUSB.passwordResetKey,
-          privateKeyEncrypted: data.sentToServer.privateKeyEncrypted,
+          passwordResetIv: data.storedForRecoveryFile.passwordResetIv,
+          passwordResetKey: data.storedForRecoveryFile.passwordResetKey,
+          encryptedPrivateKey: data.sentToServer.encryptedPrivateKey,
         });
       })(),
     ];
@@ -18,25 +18,27 @@
 
 <main>
   {#await data}
-    <h2>Generating Key</h2>
+    <h3>Generating Key</h3>
   {:then [keyData, getRecov]}
-    <h2>Generated Key, inclusive Pass Reset Data:</h2>
-    <p>
-      {JSON.stringify(keyData, null, 2)}
-    </p>
+    <h3>Generated Key, inclusive Pass Reset Data:</h3>
+    <code style="overflow-wrap:break-word;">
+      {JSON.stringify(keyData, null, '\t')}
+    </code>
     {#await getRecov}
-      <h3>Recovering Key based on USB & Server Data...</h3>
+      <h3>Recovering Key based on recovery & Server Data...</h3>
     {:then recovData}
-      <h2>Data Derived from USB & Server Data</h2>
-      {JSON.stringify(recovData, null, 2)}
+      <h3>Data Derived from recovery & Server Data</h3>
+      <code style="overflow-wrap:break-word;"
+        >{JSON.stringify(recovData, null, 4)}</code
+      >
     {/await}
   {/await}
+  <a href="/register">register</a>
+  <a href="/login">login</a>
 </main>
 
-<!-- bad styles ik stfu -->
 <style lang="scss">
   main {
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #181818;
     color: #fff;
     display: flex;
