@@ -1,7 +1,7 @@
 export declare const generateData: () => {
   sentToServer: {
     /** Key as ciphertext, useless without {@link passwordResetKey} */
-    privateKeyEncrypted: string;
+    encryptedPrivateKey: string;
     /** Used to validate password resets & to retrieve the correct key, as this should be stored alongside the key */
     passwordResetHash: string;
     /** User's Public Key */
@@ -10,7 +10,7 @@ export declare const generateData: () => {
   storedForAppLocally: {
     privateKey: string;
   };
-  storedForResetOnUSB: {
+  storedForRecoveryFile: {
     /** password reset key, additionally used to encrypt the {@link privateKey} */
     passwordResetKey: string;
     /** password reset initialization vector; useless on its own without password reset key/cyphertext */
@@ -20,16 +20,20 @@ export declare const generateData: () => {
   };
 };
 type RecovParams = {
-  privateKeyEncrypted: string;
+  encryptedPrivateKey: string;
   passwordResetKey: string;
   passwordResetIv: string;
-}
-export declare const findKeyFromPassResetKeyAndEncryptedPrivateKey: ({ privateKeyEncrypted, passwordResetKey, passwordResetIv }: RecovParams) => string;
+};
+export declare const findKeyFromPassResetKeyAndEncryptedPrivateKey: ({
+  encryptedPrivateKey,
+  passwordResetKey,
+  passwordResetIv,
+}: RecovParams) => string;
 
 export type electronAPI = {
-  genKey: () => Promise<ReturnType<typeof generateData>>,
-  keyRecov: (recovData: RecovParams) => Promise<string>
-}
+  genData: () => Promise<ReturnType<typeof generateData>>;
+  keyRecov: (recovData: RecovParams) => Promise<string>;
+};
 
 // @ts-ignore export typed window.electronAPI - see preload.ts
-export default window.electronAPI as electronAPI
+export default window.electronAPI as electronAPI;

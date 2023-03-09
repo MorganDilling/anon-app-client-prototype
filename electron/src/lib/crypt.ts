@@ -62,14 +62,14 @@ export const generateCryptData = () => {
     type: 'pkcs8',
   }); // stored locally
   const publicKey = keypair.publicKey.export({ format: 'pem', type: 'pkcs1' }); // sent to server
-  const privateKeyEncrypted = symmetricallyEncrypt(
+  const encryptedPrivateKey = symmetricallyEncrypt(
     privateKey,
     passwordResetKey,
     passwordResetIv
   ); // sent to server alongside password reset hash
 
   const sentToServer = {
-    encryptedPrivateKey: privateKeyEncrypted.toString('base64'),
+    encryptedPrivateKey: encryptedPrivateKey.toString('base64'),
 
     // Used to validate password resets & to retrieve the correct key, as this should be stored alongside the key
     passwordResetHash: passwordResetHash.toString('base64'),
