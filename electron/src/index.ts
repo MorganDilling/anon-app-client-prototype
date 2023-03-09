@@ -21,12 +21,11 @@ if (require('electron-squirrel-startup')) {
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
+  mainWindow.setMinimumSize(800, 600);
   // and load the index.html of the app.
   if (process.env.NODE_ENV === 'development')
     mainWindow.loadURL('http://localhost:5173/');
@@ -47,6 +46,8 @@ const createWindow = (): void => {
         })
     );
   }
+
+  mainWindow.maximize();
 };
 
 // This method will be called when Electron has finished
@@ -64,7 +65,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('ready', () => {
-  ipcMain.handle('genKey', () => generateCryptData());
+  ipcMain.handle('genData', () => generateCryptData());
   ipcMain.handle('keyRecov', (e, data) =>
     findKeyFromPassResetKeyAndEncryptedPrivateKey(data)
   );
