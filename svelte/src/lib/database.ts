@@ -66,20 +66,25 @@ export class DatabaseClient {
     passwordResetHash: string,
     publicKey: string
   ) {
-    const response = await axios.post(`${this.url}/v1/users/create`, {
-      password,
-      encryptedPrivateKey,
-      passwordResetHash,
-      publicKey,
-    });
+    try {
+      const response = await axios.post(`${this.url}/v1/users/create`, {
+        password,
+        encryptedPrivateKey,
+        passwordResetHash,
+        publicKey,
+      });
 
-    console.log(response);
+      console.log(response);
 
-    if (response.status !== 201) {
-      throw new Error('Error whilst registering');
+      if (response.status !== 201) {
+        return 'Error whilst registering';
+      }
+
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return 'Error whilst registering: ' + e;
     }
-
-    return response.data;
   }
 
   async login(userId: number, password: string): Promise<void> {
