@@ -8,25 +8,27 @@ export const authedUser = writable(client.authStore.model);
 
 const user = localStorage.getItem('authedUser');
 
-if (user !== null) {
-  const parsed = JSON.parse(user);
+(async () => {
+  if (user !== null) {
+    const parsed = JSON.parse(user);
 
-  const valid = await client.verifyToken(parsed?.token);
+    const valid = await client.verifyToken(parsed?.token);
 
-  console.log('valid', valid);
+    console.log('valid', valid);
 
-  if (valid) {
-    authedUser.set(parsed);
-    client.authStore.set(parsed);
-  } else {
-    console.log('not valid');
+    if (valid) {
+      authedUser.set(parsed);
+      client.authStore.set(parsed);
+    } else {
+      console.log('not valid');
 
-    client.authStore.clear();
-    authedUser.set(null);
-    localStorage.setItem('authedUser', JSON.stringify(null));
-    // navigate('/login', { replace: true });
+      client.authStore.clear();
+      authedUser.set(null);
+      localStorage.setItem('authedUser', JSON.stringify(null));
+      // navigate('/login', { replace: true });
+    }
   }
-}
+})();
 
 export const login = async (userId: number, password: string) => {
   await client.login(userId, password);
