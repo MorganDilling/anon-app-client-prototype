@@ -6,4 +6,5 @@ import { contextBridge, ipcRenderer } from 'electron';
 contextBridge.exposeInMainWorld('electronAPI', {
   genData: () => ipcRenderer.invoke('genData'),
   keyRecov: (recovData: any) => ipcRenderer.invoke('keyRecov', recovData),
+  isDev: () => ipcRenderer.invoke('isDev'),
 });

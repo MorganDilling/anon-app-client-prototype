@@ -7,7 +7,7 @@ export declare const generateData: () => {
     /** User's Public Key */
     publicKey: string;
   };
-  storedForAppLocally: {
+  storedLocally: {
     privateKey: string;
   };
   storedForRecoveryFile: {
@@ -33,6 +33,7 @@ export declare const findKeyFromPassResetKeyAndEncryptedPrivateKey: ({
 export type electronAPI = {
   genData: () => Promise<ReturnType<typeof generateData>>;
   keyRecov: (recovData: RecovParams) => Promise<string>;
+  isDev: () => boolean;
 };
 
 // @ts-ignore export typed window.electronAPI - see preload.ts
