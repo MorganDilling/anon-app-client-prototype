@@ -1,23 +1,29 @@
 <script lang="ts">
   import electronAPI from '../electronAPI';
+  import { goto } from '$app/navigation';
 
-  const data = (async () => {
-    const data = await electronAPI.genData();
-    return [
-      data,
-      (async () => {
-        return await electronAPI.keyRecov({
-          passwordResetIv: data.storedForRecoveryFile.passwordResetIv,
-          passwordResetKey: data.storedForRecoveryFile.passwordResetKey,
-          encryptedPrivateKey: data.sentToServer.encryptedPrivateKey,
-        });
-      })(),
-    ];
-  })();
+  import { loggedIn } from '@lib/databaseWrapper';
+
+  if (!loggedIn) goto('/register');
+  else goto('/app');
+
+  // const data = (async () => {
+  //   const data = await electronAPI.genData();
+  //   return [
+  //     data,
+  //     (async () => {
+  //       return await electronAPI.keyRecov({
+  //         passwordResetIv: data.storedForRecoveryFile.passwordResetIv,
+  //         passwordResetKey: data.storedForRecoveryFile.passwordResetKey,
+  //         encryptedPrivateKey: data.sentToServer.encryptedPrivateKey,
+  //       });
+  //     })(),
+  //   ];
+  // })();
 </script>
 
 <main>
-  {#await data}
+  <!-- {#await data}
     <h3>Generating Key</h3>
   {:then [keyData, getRecov]}
     <h3>Generated Key, inclusive Pass Reset Data:</h3>
@@ -32,14 +38,12 @@
         >{JSON.stringify(recovData, null, 4)}</code
       >
     {/await}
-  {/await}
-  <a href="/register">register</a>
-  <a href="/login">login</a>
+  {/await} -->
 </main>
 
 <style lang="scss">
   main {
-    background: #181818;
+    background: #24232e;
     color: #fff;
     display: flex;
     flex-direction: column;
