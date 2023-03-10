@@ -2,7 +2,16 @@ import { DatabaseClient } from './database';
 import { writable } from 'svelte/store';
 import electronAPI from '../electronAPI';
 
-export const client = new DatabaseClient('http://127.0.0.1:7020');
+let connectionString: string;
+
+if (electronAPI.isDev()) {
+  connectionString = 'http://127.0.0.1:31742';
+  console.log('isDev true');
+} else {
+  connectionString = 'http://127.0.0.1:31742'; // same for now
+}
+
+export const client = new DatabaseClient(connectionString);
 
 export const authedUser = writable(client.authStore.model);
 
@@ -30,8 +39,11 @@ const user = localStorage.getItem('authedUser');
   }
 })();
 
+export let loggedIn = user !== null;
+
 export const login = async (userId: number, password: string) => {
   await client.login(userId, password);
+  loggedIn = true;
 };
 
 export const register = async (password: string) => {
@@ -59,17 +71,27 @@ export const register = async (password: string) => {
     passwordResetHash,
     publicKey.toString()
   );
-  return { responseData: data, recoveryData: '' };
+  return {
+    responseData: data,
+    recoveryData,
+    local: generatedData.storedLocally,
+  };
 };
 
 export const logout = async () => {
   console.log('logout');
 
   await client.logout();
+
+  loggedIn = false;
 };
 
 client.authStore.onChange((auth) => {
   console.log('authStore.onChange', auth);
   authedUser.set(client.authStore.model);
   localStorage.setItem('authedUser', JSON.stringify(client.authStore.model));
+
+  if (!client.authStore.model) {
+    localStorage.setItem('privateKey', 'null');
+  }
 });
