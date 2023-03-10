@@ -26,6 +26,7 @@ const createWindow = (): void => {
     },
   });
   mainWindow.setMinimumSize(800, 600);
+  mainWindow.setBackgroundColor('#24232e');
   // and load the index.html of the app.
   if (process.env.NODE_ENV === 'development')
     mainWindow.loadURL('http://localhost:5173/');
@@ -69,6 +70,7 @@ app.on('ready', () => {
   ipcMain.handle('keyRecov', (e, data) =>
     findKeyFromPassResetKeyAndEncryptedPrivateKey(data)
   );
+  ipcMain.handle('isDev', () => app.isPackaged);
 });
 
 app.on('activate', () => {
