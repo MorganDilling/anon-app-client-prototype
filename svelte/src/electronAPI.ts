@@ -1,33 +1,27 @@
 export declare const generateData: () => {
   sentToServer: {
-    /** Key as ciphertext, useless without {@link passwordResetKey} */
     encryptedPrivateKey: string;
-    /** Used to validate password resets & to retrieve the correct key, as this should be stored alongside the key */
-    passwordResetHash: string;
-    /** User's Public Key */
+    keyRecoveryHash: string;
     publicKey: string;
   };
   storedLocally: {
     privateKey: string;
   };
   storedForRecoveryFile: {
-    /** password reset key, additionally used to encrypt the {@link privateKey} */
-    passwordResetKey: string;
-    /** password reset initialization vector; useless on its own without password reset key/cyphertext */
-    passwordResetIv: string;
-    /** used to derive passwordResetHash in combination with {@link passwordResetKey} */
-    passwordResetHmacKey: string;
+    keyRecoveryKey: string;
+    keyRecoveryIv: string;
+    keyRecoveryHmacKey: string;
   };
 };
 export type RecovParams = {
   encryptedPrivateKey: string;
-  passwordResetKey: string;
-  passwordResetIv: string;
+  keyRecoveryKey: string;
+  keyRecoveryIv: string;
 };
 export declare const findKeyFromPassResetKeyAndEncryptedPrivateKey: ({
   encryptedPrivateKey,
-  passwordResetKey,
-  passwordResetIv,
+  keyRecoveryKey,
+  keyRecoveryIv,
 }: RecovParams) => string;
 
 export type electronAPI = {

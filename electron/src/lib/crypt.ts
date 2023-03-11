@@ -86,19 +86,19 @@ export const generateCryptData = () => {
 
 export const findKeyFromPassResetKeyAndEncryptedPrivateKey = ({
   encryptedPrivateKey,
-  passwordResetKey,
-  passwordResetIv,
+  keyRecoveryKey,
+  keyRecoveryIv,
 }: {
   encryptedPrivateKey: string;
-  passwordResetKey: string;
-  passwordResetIv: string;
+  keyRecoveryKey: string;
+  keyRecoveryIv: string;
 }) => {
   const encryptedPrivateKeyAsBuffer = Buffer.from(
     encryptedPrivateKey,
     'base64'
   );
-  const passwordResetKeyAsBuffer = Buffer.from(passwordResetKey, 'base64');
-  const ivAsBuffer = Buffer.from(passwordResetIv, 'base64');
+  const passwordResetKeyAsBuffer = Buffer.from(keyRecoveryKey, 'base64');
+  const ivAsBuffer = Buffer.from(keyRecoveryIv, 'base64');
   return symmetricallyDecrypt(
     encryptedPrivateKeyAsBuffer,
     passwordResetKeyAsBuffer,

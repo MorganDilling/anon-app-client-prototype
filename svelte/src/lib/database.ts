@@ -63,14 +63,14 @@ export class DatabaseClient {
   async register(
     password: string,
     encryptedPrivateKey: string,
-    passwordResetHash: string,
+    keyRecoveryHash: string,
     publicKey: string
   ) {
     try {
       const response = await axios.post(`${this.url}/v1/users/create`, {
         password,
         encryptedPrivateKey,
-        passwordResetHash,
+        keyRecoveryHash,
         publicKey,
       });
 

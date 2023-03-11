@@ -86,8 +86,8 @@
       try {
         const privateKey = await electronAPI.keyRecov({
           encryptedPrivateKey: response.encryptedPrivateKey,
-          passwordResetKey: fileContentDecodedObject.passwordResetKey,
-          passwordResetIv: fileContentDecodedObject.passwordResetIv,
+          keyRecoveryKey: fileContentDecodedObject.keyRecoveryKey,
+          keyRecoveryIv: fileContentDecodedObject.keyRecoveryIv,
         });
         if (
           privateKey &&

@@ -54,7 +54,7 @@ export const login = async (
 export const register = async (password: string) => {
   const generatedData = await electronAPI.genData();
 
-  const { encryptedPrivateKey, passwordResetHash, publicKey } =
+  const { encryptedPrivateKey, keyRecoveryHash, publicKey } =
     generatedData.sentToServer;
 
   console.log('generatedData', generatedData);
@@ -70,10 +70,12 @@ export const register = async (password: string) => {
 
   console.log('recoveryData', recoveryData);
 
+  console.log(keyRecoveryHash);
+
   const data = await client.register(
     password,
     encryptedPrivateKey,
-    passwordResetHash,
+    keyRecoveryHash,
     publicKey.toString()
   );
   return {
