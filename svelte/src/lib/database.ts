@@ -87,37 +87,52 @@ export class DatabaseClient {
     }
   }
 
-  async login(userId: number, password: string): Promise<void> {
-    const response = await axios.post(`${this.url}/v1/auth/login`, {
-      userId,
-      password,
-    });
+  async login(
+    userId: number,
+    password: string
+  ): Promise<
+    | { success: true; encryptedPrivateKey: string }
+    | { success: false; error: string }
+  > {
+    try {
+      const response = await axios.post(`${this.url}/v1/auth/login`, {
+        userId,
+        password,
+      });
 
-    console.log(response.data);
-    console.log(response.status);
+      console.log(response.data);
+      console.log(response.status);
 
-    if (
-      response.status !== 200 ||
-      (response.status === 200 && response.data.access === false)
-    ) {
-      throw new Error('Invalid credentials');
+      if (
+        response.status !== 200 ||
+        (response.status === 200 && response.data.access === false)
+      ) {
+        return { success: false, error: 'Invalid credentials' };
+      }
+
+      const token = response.data.token;
+
+      const userResponse = await axios.get(`${this.url}/v1/users/${userId}`, {
+        headers: {
+          token,
+        },
+      });
+
+      if (userResponse.status !== 200) {
+        return { success: false, error: 'Cannot find user' };
+      }
+
+      this.authStore.model = { userId: userResponse.data.user.id, token };
+
+      this.callOnChange();
+
+      return {
+        success: true,
+        encryptedPrivateKey: response.data.encryptedPrivateKey,
+      };
+    } catch (e) {
+      return { success: false, error: String(e) };
     }
-
-    const token = response.data.token;
-
-    const userResponse = await axios.get(`${this.url}/v1/users/${userId}`, {
-      headers: {
-        token,
-      },
-    });
-
-    if (userResponse.status !== 200) {
-      throw new Error('Cannot find user');
-    }
-
-    this.authStore.model = { userId: userResponse.data.user.id, token };
-
-    this.callOnChange();
   }
 
   async logout(): Promise<void> {

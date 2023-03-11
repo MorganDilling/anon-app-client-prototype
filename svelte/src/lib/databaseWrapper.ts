@@ -39,11 +39,16 @@ const user = localStorage.getItem('authedUser');
   }
 })();
 
-export let loggedIn = user !== null;
+export const login = async (
+  userId: number,
+  password: string
+): Promise<
+  | { success: true; encryptedPrivateKey: string }
+  | { success: false; error: string }
+> => {
+  const response = await client.login(userId, password);
 
-export const login = async (userId: number, password: string) => {
-  await client.login(userId, password);
-  loggedIn = true;
+  return response;
 };
 
 export const register = async (password: string) => {
@@ -82,8 +87,6 @@ export const logout = async () => {
   console.log('logout');
 
   await client.logout();
-
-  loggedIn = false;
 };
 
 client.authStore.onChange((auth) => {
