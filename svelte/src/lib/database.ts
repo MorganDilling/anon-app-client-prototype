@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const urlRegex =
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/;
@@ -130,8 +130,25 @@ export class DatabaseClient {
         success: true,
         encryptedPrivateKey: response.data.encryptedPrivateKey,
       };
-    } catch (e) {
-      return { success: false, error: String(e) };
+    } catch (e: unknown) {
+      console.log(e);
+
+      switch ((e as AxiosError).response?.status) {
+        case 404: {
+          return { success: false, error: `Could not find user: ${userId}` };
+          break;
+        }
+        case 401: {
+          return {
+            success: false,
+            error: `Incorrect credentials for user: ${userId}`,
+          };
+          break;
+        }
+        default: {
+          return { success: false, error: String(e) };
+        }
+      }
     }
   }
 

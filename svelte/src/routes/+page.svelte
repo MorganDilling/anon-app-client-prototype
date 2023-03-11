@@ -1,4 +1,6 @@
 <script lang="ts">
+  console.log('%cAnonApp', 'font-size: 5em; font-weight: 500; color: grey;');
+
   import electronAPI from '../electronAPI';
   import { goto } from '$app/navigation';
 

@@ -3,7 +3,7 @@
     target: HTMLInputElement & EventTarget;
   }
 
-  import { authedUser, login } from '@lib/databaseWrapper';
+  import { authedUser, login, logout } from '@lib/databaseWrapper';
   import { fly } from 'svelte/transition';
   import { linear } from 'svelte/easing';
 
@@ -83,13 +83,24 @@
     if (response.success) {
       const fileContentDecodedObject = JSON.parse(atob(fileContent));
       console.log(fileContentDecodedObject);
-      const privateKey = await electronAPI.keyRecov({
-        encryptedPrivateKey: response.encryptedPrivateKey,
-        passwordResetKey: fileContentDecodedObject.passwordResetKey,
-        passwordResetIv: fileContentDecodedObject.passwordResetIv,
-      });
-      if (privateKey && privateKey.startsWith('-----BEGIN PRIVATE KEY-----')) {
-        localStorage.setItem('privateKey', privateKey);
+      try {
+        const privateKey = await electronAPI.keyRecov({
+          encryptedPrivateKey: response.encryptedPrivateKey,
+          passwordResetKey: fileContentDecodedObject.passwordResetKey,
+          passwordResetIv: fileContentDecodedObject.passwordResetIv,
+        });
+        if (
+          privateKey &&
+          privateKey.startsWith('-----BEGIN PRIVATE KEY-----')
+        ) {
+          localStorage.setItem('privateKey', privateKey);
+        }
+      } catch (e) {
+        console.error(e);
+        errorMessage = 'Invalid recovery data file';
+        debounce = false;
+        logout();
+        return;
       }
     }
 
