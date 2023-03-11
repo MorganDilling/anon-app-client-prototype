@@ -19,7 +19,7 @@ export declare const generateData: () => {
     passwordResetHmacKey: string;
   };
 };
-type RecovParams = {
+export type RecovParams = {
   encryptedPrivateKey: string;
   passwordResetKey: string;
   passwordResetIv: string;
