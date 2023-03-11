@@ -2,9 +2,9 @@
   import electronAPI from '../electronAPI';
   import { goto } from '$app/navigation';
 
-  import { loggedIn } from '@lib/databaseWrapper';
+  const user = localStorage.getItem('authedUser');
 
-  if (!loggedIn) goto('/register');
+  if (user === 'null') goto('/register');
   else goto('/app');
 
   // const data = (async () => {
