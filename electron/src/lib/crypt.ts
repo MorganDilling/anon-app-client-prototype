@@ -5,7 +5,6 @@ export interface KeyPair {
   privateKey: KeyObject;
 }
 
-// RSA Key Generation
 export const generateKeyPair = (): KeyPair => {
   const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
     modulusLength: 2048,
@@ -13,22 +12,17 @@ export const generateKeyPair = (): KeyPair => {
   return { publicKey, privateKey };
 };
 
-// AES Key Generation
 export const generateSymmetricKey = () =>
   crypto.generateKeySync('aes', { length: 256 });
 
-// HMAC Key Generation
 export const generateHmacKey = () =>
   crypto.generateKeySync('hmac', { length: 4096 });
 
-// Generate a random 16-byte initialization vector
 export const generateInitialisationVector = () => crypto.randomBytes(16);
 
-// Hmac data using SHA-512
 export const hmac = (data: Buffer | string, key: Buffer | string) =>
   crypto.createHmac('sha512', key).update(data).digest();
 
-// Symmetric encryption using AES-256-CBC
 export const symmetricallyEncrypt = (
   data: Buffer | string,
   key: Buffer | KeyLike,
@@ -39,7 +33,6 @@ export const symmetricallyEncrypt = (
   return encrypted;
 };
 
-// Symmetric decryption using AES-256-CBC
 export const symmetricallyDecrypt = (
   data: Buffer,
   key: Buffer | KeyLike,
@@ -51,39 +44,33 @@ export const symmetricallyDecrypt = (
 };
 
 export const generateCryptData = () => {
-  const passwordResetKey = generateSymmetricKey(); // stay on device
-  const passwordResetIv = generateInitialisationVector(); // stay on device
-  const passwordResetHmac = generateHmacKey().export(); // stored with pswd reset key
-  const passwordResetHash = hmac(passwordResetKey.export(), passwordResetHmac); // sent to server on pswd reset and registration
+  const keyRecoveryKey = generateSymmetricKey();
+  const keyRecoveryIv = generateInitialisationVector();
+  const keyRecoveryHmac = generateHmacKey().export();
+  const keyRecoveryHash = hmac(keyRecoveryKey.export(), keyRecoveryHmac);
 
   const keypair = generateKeyPair();
   const privateKey = keypair.privateKey.export({
     format: 'pem',
     type: 'pkcs8',
-  }); // stored locally
-  const publicKey = keypair.publicKey.export({ format: 'pem', type: 'pkcs1' }); // sent to server
+  });
+  const publicKey = keypair.publicKey.export({ format: 'pem', type: 'pkcs1' });
   const encryptedPrivateKey = symmetricallyEncrypt(
     privateKey,
-    passwordResetKey,
-    passwordResetIv
-  ); // sent to server alongside password reset hash
+    keyRecoveryKey,
+    keyRecoveryIv
+  );
 
   const sentToServer = {
     encryptedPrivateKey: encryptedPrivateKey.toString('base64'),
-
-    // Used to validate password resets & to retrieve the correct key, as this should be stored alongside the key
-    passwordResetHash: passwordResetHash.toString('base64'),
-
+    keyRecoveryHash: keyRecoveryHash.toString('base64'),
     publicKey,
   };
 
   const storedForRecoveryFile = {
-    // password reset key
-    passwordResetKey: passwordResetKey.export().toString('base64'),
-    // password reset initialisation vector
-    passwordResetIv: passwordResetIv.toString('base64'),
-    // used to derive password reset hash
-    passwordResetHmac: passwordResetHmac.toString('base64'),
+    keyRecoveryKey: keyRecoveryKey.export().toString('base64'),
+    keyRecoveryIv: keyRecoveryIv.toString('base64'),
+    keyRecoveryHmac: keyRecoveryHmac.toString('base64'),
   };
 
   const storedLocally = {
