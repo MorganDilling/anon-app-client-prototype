@@ -3,7 +3,12 @@
     target: HTMLInputElement & EventTarget;
   }
 
-  import { authedUser, login, logout } from '@lib/databaseWrapper';
+  import {
+    authedUser,
+    login,
+    logout,
+    resetPassword as resetPasswordFunc,
+  } from '@lib/databaseWrapper';
   import { fly } from 'svelte/transition';
   import { linear } from 'svelte/easing';
 
@@ -18,18 +23,31 @@
 
   let step = 0;
 
+  let passwordResetNotice: string;
+
   let file: File | undefined;
   let fileContent: string;
+
+  let resetFile: File | undefined;
+  let resetFileContent: string;
 
   let debounce = false;
 
   let userId: string;
   let password: string;
 
+  let resetUserId: string;
+  let resetPassword: string;
+  let resetConfirmPassword: string;
+
   let idValid = true;
   let pswValid = true;
 
+  let resetIdValid = true;
+  let resetPswValid = true;
+
   let errorMessage: string | undefined;
+  let resetErrorMessage: string | undefined;
 
   const forward = () => {
     step++;
@@ -66,7 +84,86 @@
     });
   };
 
-  const Login = async () => {
+  const resetForm = (e: Event) => {
+    const target = e.target as HTMLFormElement;
+
+    target.reset();
+  };
+
+  const validateInputs = ():
+    | { valid: true }
+    | { valid: false; error: string } => {
+    if (!resetPassword || resetPassword === '') {
+      return { valid: false, error: 'Password must not be empty.' };
+    }
+    if (resetPassword.length < 12)
+      return {
+        valid: false,
+        error: 'Password must be at least 12 characters long.',
+      };
+
+    if (resetPassword === resetPassword.toLowerCase())
+      return {
+        valid: false,
+        error: 'Password must contain at least one uppercase letter.',
+      };
+
+    if (resetPassword === resetPassword.toUpperCase())
+      return {
+        valid: false,
+        error: 'Password must contain at least one lowercase letter.',
+      };
+
+    if (!resetPassword.match(/[0-9]+/giu))
+      return {
+        valid: false,
+        error: 'Password must contain at least one number.',
+      };
+
+    if (resetPassword !== resetConfirmPassword) {
+      return { valid: false, error: 'Passwords do not match.' };
+    }
+
+    return { valid: true };
+  };
+
+  const ResetPassword = async (): Promise<void> => {
+    if (!resetFile) {
+      resetErrorMessage = 'Please upload your recovery data file';
+      debounce = false;
+      return;
+    }
+
+    const valid = validateInputs();
+
+    pswValid = valid.valid;
+
+    if (!valid.valid) {
+      resetErrorMessage = valid.error;
+      debounce = false;
+      return;
+    }
+
+    const { keyRecoveryKey, keyRecoveryIv } = JSON.parse(
+      atob(resetFileContent)
+    );
+
+    const response = await resetPasswordFunc(
+      Number(resetUserId),
+      resetPassword,
+      keyRecoveryKey,
+      keyRecoveryIv
+    );
+
+    if (response.success) {
+      passwordResetNotice = 'Password reset successfully';
+      forward();
+    } else {
+      resetErrorMessage = response.message;
+    }
+  };
+
+  const Login = async (): Promise<void> => {
     if (debounce) return;
     debounce = true;
 
@@ -78,11 +175,8 @@
 
     const response = await login(Number(userId), password);
 
-    console.log('login response', response);
-
     if (response.success) {
       const fileContentDecodedObject = JSON.parse(atob(fileContent));
-      console.log(fileContentDecodedObject);
       try {
         const privateKey = await electronAPI.keyRecov({
           encryptedPrivateKey: response.encryptedPrivateKey,
@@ -126,90 +220,201 @@
     </p>
   </div>
   <div class="content-container">
-    <div
-      class="login-container"
-      in:fly={{ duration: 150, easing: linear, x: 25, delay: 75 }}
-      out:fly={{ duration: 150, easing: linear, x: -25 }}
-    >
-      <header style="margin-bottom: 15px;">
-        <h1 style="font-size: 50px; font-weight:500; margin-bottom: 10px">
-          Login
-        </h1>
-        <div class="line" />
-      </header>
-      <form on:submit|preventDefault>
-        {#if errorMessage}
-          <p class="notice" style="color: #ff0000">
-            {errorMessage}
+    {#if step === 0}
+      <div
+        class="login-container"
+        in:fly={{ duration: 150, easing: linear, x: 25, delay: 75 }}
+        out:fly={{ duration: 150, easing: linear, x: -25 }}
+      >
+        <header style="margin-bottom: 15px;">
+          <h1 style="font-size: 50px; font-weight:500; margin-bottom: 10px">
+            Login
+          </h1>
+          <div class="line" />
+        </header>
+        <form on:submit|preventDefault={resetForm}>
+          {#if errorMessage}
+            <p class="notice" style="color: #ff0000">
+              {errorMessage}
+            </p>
+          {/if}
+          <input
+            class={idValid ? '' : 'error'}
+            type="text"
+            inputmode="numeric"
+            placeholder="User ID"
+            on:keypress={(e) => {
+              if (isNaN(Number(e.key))) e.preventDefault();
+            }}
+            bind:value={userId}
+          />
+          <input
+            class={pswValid ? '' : 'error'}
+            type="password"
+            placeholder="Password"
+            bind:value={password}
+          />
+          <p class="notice">
+            <a
+              href="/login"
+              on:click={() => {
+                forward();
+              }}>Forgot your password?</a
+            >
           </p>
-        {/if}
-        <input
-          class={idValid ? '' : 'error'}
-          type="text"
-          inputmode="numeric"
-          placeholder="User ID"
-          on:keypress={(e) => {
-            if (isNaN(Number(e.key))) e.preventDefault();
-          }}
-          bind:value={userId}
-        />
-        <input
-          class={pswValid ? '' : 'error'}
-          type="password"
-          placeholder="Password"
-          bind:value={password}
-        />
-        <p class="notice">
-          <a
-            href="/login"
+
+          {#if file}
+            <p style="display:flex;justify-content:center;align-items:center;">
+              {file?.name}
+            </p>
+          {/if}
+
+          <button
+            style="display:flex;justify-content:center;align-items:center;"
             on:click={() => {
-              alert('skill issue');
-            }}>Forgot your password?</a
+              const fileInput = document.getElementById('recovery_data');
+              fileInput?.click();
+            }}
+            ><Upload style="margin-right:5px" />Upload recovery data file</button
           >
-        </p>
+          <input
+            style="display:none;"
+            id="recovery_data"
+            type="file"
+            accept=".txt"
+            on:change={async (e) => {
+              const content = await getFileData(e);
 
-        {#if file}
-          <p style="display:flex;justify-content:center;align-items:center;">
-            {file?.name}
+              if (content) {
+                file = content.file;
+                fileContent = content.content;
+              }
+            }}
+          />
+
+          <input
+            class={file !== undefined ? '' : 'disabled'}
+            type="submit"
+            on:click={Login}
+            value="Log In →"
+          />
+          <p class="notice">
+            Don't have an account yet? <a href="/register">Register →</a>
           </p>
-        {/if}
-
-        <button
-          style="display:flex;justify-content:center;align-items:center;"
-          on:click={() => {
-            const fileInput = document.getElementById('recovery_data');
-            fileInput?.click();
-          }}
-          ><Upload style="margin-right:5px" />Upload recovery data file</button
-        >
-        <input
-          style="display:none;"
-          id="recovery_data"
-          type="file"
-          accept=".txt"
-          on:change={async (e) => {
-            console.log(e);
-            const content = await getFileData(e);
-            console.log(content);
-
-            if (content) {
-              file = content.file;
-              fileContent = content.content;
-            }
-          }}
-        />
-
-        <input
-          class={file !== undefined ? '' : 'disabled'}
-          type="submit"
-          on:click={Login}
-          value="Log In →"
-        />
-        <p class="notice">
-          Don't have an account yet? <a href="/register">Register →</a>
+        </form>
+      </div>
+    {:else if step === 1}
+      <div
+        class="login-container"
+        in:fly={{ duration: 150, easing: linear, x: 25, delay: 75 }}
+        out:fly={{ duration: 150, easing: linear, x: -25 }}
+      >
+        <header style="margin-bottom: 15px;">
+          <h1 style="font-size: 50px; font-weight:500; margin-bottom: 10px">
+            Reset password
+          </h1>
+          <div class="line" />
+        </header>
+        <p class="important">
+          Enter your user identification number, the password you would like to
+          reset to and your recovery data file.
         </p>
-      </form>
-    </div>
+        <form on:submit|preventDefault={resetForm}>
+          {#if resetErrorMessage}
+            <p class="notice" style="color: #ff0000">
+              {resetErrorMessage}
+            </p>
+          {/if}
+          <input
+            class={idValid ? '' : 'error'}
+            type="text"
+            inputmode="numeric"
+            placeholder="User ID"
+            on:keypress={(e) => {
+              if (isNaN(Number(e.key))) e.preventDefault();
+            }}
+            bind:value={resetUserId}
+          />
+          <input
+            class={pswValid ? '' : 'error'}
+            type="password"
+            placeholder="New Password"
+            bind:value={resetPassword}
+          />
+          <input
+            class={pswValid ? '' : 'error'}
+            type="password"
+            placeholder="Confirm New Password"
+            bind:value={resetConfirmPassword}
+          />
+
+          {#if resetFile}
+            <p style="display:flex;justify-content:center;align-items:center;">
+              {resetFile?.name}
+            </p>
+          {/if}
+
+          <button
+            style="display:flex;justify-content:center;align-items:center;"
+            on:click={() => {
+              const fileInput = document.getElementById('recovery_data');
+              fileInput?.click();
+            }}
+            ><Upload style="margin-right:5px" />Upload recovery data file</button
+          >
+          <input
+            style="display:none;"
+            id="recovery_data"
+            type="file"
+            accept=".txt"
+            on:change={async (e) => {
+              const content = await getFileData(e);
+
+              if (content) {
+                resetFile = content.file;
+                resetFileContent = content.content;
+              }
+            }}
+          />
+
+          <input
+            class={resetFile !== undefined ? '' : 'disabled'}
+            type="submit"
+            on:click={ResetPassword}
+            value="Reset →"
+          />
+          <p class="notice">
+            Remember your login details? <a
+              href="/login"
+              on:click={() => {
+                backward();
+              }}>Go back</a
+            >
+          </p>
+        </form>
+      </div>
+    {:else if step === 2}
+      <div
+        class="login-container"
+        in:fly={{ duration: 150, easing: linear, x: 25, delay: 75 }}
+        out:fly={{ duration: 150, easing: linear, x: -25 }}
+      >
+        <header style="margin-bottom: 15px;">
+          <h1 style="font-size: 50px; font-weight:500; margin-bottom: 10px">
+            Reset password
+          </h1>
+          <div class="line" />
+        </header>
+        <p class="important">
+          {passwordResetNotice}
+        </p>
+        <button
+          on:click={() => {
+            step = 0;
+          }}>Continue to login →</button
+        >
+      </div>
+    {/if}
   </div>
   {#if debounce === true}
     <div class="loading">Loading...</div>

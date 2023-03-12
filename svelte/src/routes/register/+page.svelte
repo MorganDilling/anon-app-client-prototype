@@ -103,15 +103,11 @@
       login(data.responseData.user.id, password);
     }
 
-    console.log(data);
-
     if (data?.recoveryData) {
       blobUrl = blob(data.recoveryData);
     }
 
     if (data?.local) {
-      console.log('Local data:', data.local);
-
       localStorage.setItem('privateKey', data.local.privateKey);
     }
 
@@ -191,7 +187,8 @@
         <p class="important">
           Download the following password recovery file and store it in a safe
           location. It is used to recover your account if you ever forget your
-          password and to be able to log in on other devices.
+          password and to be able to log in on other devices. Do not share it
+          with anyone else.
         </p>
         <a
           class="download"

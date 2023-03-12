@@ -6,7 +6,6 @@ let connectionString: string;
 
 if (electronAPI.isDev()) {
   connectionString = 'http://127.0.0.1:31742';
-  console.log('isDev true');
 } else {
   connectionString = 'http://127.0.0.1:31742'; // same for now
 }
@@ -23,14 +22,10 @@ const user = localStorage.getItem('authedUser');
 
     const valid = await client.verifyToken(parsed?.token);
 
-    console.log('valid', valid);
-
     if (valid) {
       authedUser.set(parsed);
       client.authStore.set(parsed);
     } else {
-      console.log('not valid');
-
       client.authStore.clear();
       authedUser.set(null);
       localStorage.setItem('authedUser', JSON.stringify(null));
@@ -51,26 +46,30 @@ export const login = async (
   return response;
 };
 
+export const resetPassword = async (
+  userId: number,
+  newPassword: string,
+  keyRecoveryKey: string,
+  keyRecoveryIv: string
+) => {
+  const response = await client.resetPassword(
+    userId,
+    newPassword,
+    keyRecoveryKey,
+    keyRecoveryIv
+  );
+  return response;
+};
+
 export const register = async (password: string) => {
   const generatedData = await electronAPI.genData();
 
   const { encryptedPrivateKey, keyRecoveryHash, publicKey } =
     generatedData.sentToServer;
 
-  console.log('generatedData', generatedData);
-
   const recoveryData = btoa(
     JSON.stringify(generatedData.storedForRecoveryFile)
   );
-
-  console.log(
-    'recoveryDataJSON',
-    JSON.stringify(generatedData.storedForRecoveryFile)
-  );
-
-  console.log('recoveryData', recoveryData);
-
-  console.log(keyRecoveryHash);
 
   const data = await client.register(
     password,
@@ -86,13 +85,10 @@ export const register = async (password: string) => {
 };
 
 export const logout = async () => {
-  console.log('logout');
-
   await client.logout();
 };
 
 client.authStore.onChange((auth) => {
-  console.log('authStore.onChange', auth);
   authedUser.set(client.authStore.model);
   localStorage.setItem('authedUser', JSON.stringify(client.authStore.model));
 

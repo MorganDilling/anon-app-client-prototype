@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import electronAPI from '../electronAPI';
 
 const urlRegex =
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/;
@@ -84,6 +85,69 @@ export class DatabaseClient {
     } catch (e) {
       console.error(e);
       return 'Error whilst registering: ' + e;
+    }
+  }
+
+  async resetPassword(
+    userId: number,
+    newPassword: string,
+    keyRecoveryKey: string,
+    keyRecoveryIv: string
+  ): Promise<{ success: true } | { success: false; message: string }> {
+    try {
+      const responseA = await axios.post(
+        `${this.url}/v1/password/request-reset-a`,
+        {
+          userId,
+        }
+      );
+
+      console.log(responseA);
+
+      if (responseA.status !== 200) {
+        return { success: false, message: 'Error whilst resetting password' };
+      }
+
+      const privateKey = await electronAPI.keyRecov({
+        encryptedPrivateKey: responseA.data.encryptedPrivateKey,
+        keyRecoveryKey,
+        keyRecoveryIv,
+      });
+
+      console.log(privateKey);
+
+      console.log(responseA.data.message);
+
+      const decryptedMessage = await electronAPI.decrypt(
+        responseA.data.message,
+        privateKey,
+        'base64'
+      );
+
+      console.log('decrypted message', decryptedMessage);
+
+      const responseB = await axios.post(
+        `${this.url}/v1/password/request-reset-b`,
+        {
+          userId,
+          decryptedMessage,
+          newPassword,
+        }
+      );
+
+      console.log(responseB);
+
+      if (responseB.status !== 200) {
+        return { success: false, message: 'Error whilst resetting password' };
+      }
+
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return {
+        success: false,
+        message: 'Error whilst resetting password: ' + e,
+      };
     }
   }
 

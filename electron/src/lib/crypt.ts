@@ -43,6 +43,38 @@ export const symmetricallyDecrypt = (
   return decrypted;
 };
 
+export const asymmetricallyEncrypt = (
+  data: Buffer | string,
+  publicKey: KeyObject
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const encrypted = crypto.publicEncrypt(publicKey, Buffer.from(data));
+      resolve(encrypted.toString('base64'));
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+export const asymmetricallyDecrypt = (
+  data: string,
+  privateKey: KeyObject,
+  encoding: BufferEncoding
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const decrypted = crypto.privateDecrypt(
+        privateKey,
+        Buffer.from(data, 'base64')
+      );
+      resolve(decrypted.toString(encoding));
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 export const generateCryptData = () => {
   const keyRecoveryKey = generateSymmetricKey();
   const keyRecoveryIv = generateInitialisationVector();
