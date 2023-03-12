@@ -271,6 +271,7 @@
 
           <button
             style="display:flex;justify-content:center;align-items:center;"
+            type="button"
             on:click={() => {
               const fileInput = document.getElementById('recovery_data');
               fileInput?.click();
@@ -356,6 +357,7 @@
 
           <button
             style="display:flex;justify-content:center;align-items:center;"
+            type="button"
             on:click={() => {
               const fileInput = document.getElementById('recovery_data');
               fileInput?.click();
