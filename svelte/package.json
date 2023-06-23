@@ -24,7 +24,7 @@
     "eslint": "^8.35.0",
     "eslint-plugin-svelte3": "^4.0.0",
     "sass": "^1.58.3",
-    "svelte": "^3.55.1",
+    "svelte": "^4.0.0",
     "svelte-bootstrap-icons": "^2.3.1",
     "svelte-check": "^3.1.0",
     "tslib": "^2.5.0",
