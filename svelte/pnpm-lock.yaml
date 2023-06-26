@@ -10,7 +10,7 @@ specifiers:
   eslint-plugin-svelte3: ^4.0.0
   sass: ^1.58.3
   svelte: ^3.55.1
-  svelte-bootstrap-icons: ^2.3.1
+  svelte-bootstrap-icons: ^3.0.0
   svelte-check: ^3.1.0
   tslib: ^2.5.0
   typescript: ^4.9.5
@@ -28,7 +28,7 @@ devDependencies:
   eslint-plugin-svelte3: 4.0.0_n4ieifq2d7jq3sqoe474cgqlim
   sass: 1.58.3
   svelte: 3.55.1
-  svelte-bootstrap-icons: 2.3.1
+  svelte-bootstrap-icons: 3.0.0
   svelte-check: 3.1.0_sass@1.58.3+svelte@3.55.1
   tslib: 2.5.0
   typescript: 4.9.5
@@ -1586,8 +1586,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /svelte-bootstrap-icons/2.3.1:
-    resolution: {integrity: sha512-Vqhgmcd55hEoB/MrPESvVYo4+m++2q9l00a5lzGkgbXTiO6go21PTU9DaeAJ446WBiEmg3Q8sv9QVOBmh5c1ww==}
+  /svelte-bootstrap-icons/3.0.0:
+    resolution: {integrity: sha512-KW4CHGy8kuSSYcmPhmR0DPpCDNHbUOoU7zdC3h4xQQZ46EZTZNW07ZzLDFKTwvTDb6ZJ21euS4pVOvgogxMimQ==}
     dev: true
 
   /svelte-check/3.1.0_sass@1.58.3+svelte@3.55.1:
