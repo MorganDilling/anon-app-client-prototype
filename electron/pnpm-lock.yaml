@@ -16,7 +16,7 @@ specifiers:
   '@vercel/webpack-asset-relocator-loader': 1.7.3
   copy-webpack-plugin: ^11.0.0
   css-loader: ^6.7.3
-  electron: 23.1.3
+  electron: 23.3.13
   electron-squirrel-startup: ^1.0.0
   eslint: ^8.35.0
   eslint-plugin-import: ^2.27.5
@@ -51,7 +51,7 @@ devDependencies:
   '@vercel/webpack-asset-relocator-loader': 1.7.3
   copy-webpack-plugin: 11.0.0_webpack@5.75.0
   css-loader: 6.7.3_webpack@5.75.0
-  electron: 23.1.3
+  electron: 23.3.13
   eslint: 8.35.0
   eslint-plugin-import: 2.27.5_uyiasnnzcqrxqkfvjklwnmwcha
   fork-ts-checker-webpack-plugin: 8.0.0_hhrrucqyg4eysmfpujvov2ym5u
@@ -2267,8 +2267,8 @@ packages:
     dev: true
     optional: true
 
-  /electron/23.1.3:
-    resolution: {integrity: sha512-MNjuUS2K6/OxlJ0zTC77djo1R3xM038v1kUunvNFgDMZHYKpSOzOMNsPiwM2BGp+uZbkUb0nTnYafxXrM8H16w==}
+  /electron/23.3.13:
+    resolution: {integrity: sha512-BaXtHEb+KYKLouUXlUVDa/lj9pj4F5kiE0kwFdJV84Y2EU7euIDgPthfKtchhr5MVHmjtavRMIV/zAwEiSQ9rQ==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
     requiresBuild: true
@@ -4382,6 +4382,7 @@ packages:
 
   /nice-try/1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
+    requiresBuild: true
     dev: true
 
   /no-case/3.0.4:
@@ -4785,6 +4786,7 @@ packages:
   /path-key/2.0.1:
     resolution: {integrity: sha512-fEHGKCSmUSDPv4uoj8AlD+joPlq3peND+HRYyxFz4KPw4z926S/b8rIuFs2FYJg3BwsxJf6A9/3eIdLaYC+9Dw==}
     engines: {node: '>=4'}
+    requiresBuild: true
     dev: true
 
   /path-key/3.1.1:
@@ -5382,6 +5384,7 @@ packages:
   /shebang-command/1.2.0:
     resolution: {integrity: sha512-EV3L1+UQWGor21OmnvojK36mhg+TyIKDh3iFBKBohr5xeXIhNBcx8oWdgkTEEQ+BEFFYdLRuqMfd5L84N1V5Vg==}
     engines: {node: '>=0.10.0'}
+    requiresBuild: true
     dependencies:
       shebang-regex: 1.0.0
     dev: true
@@ -5396,6 +5399,7 @@ packages:
   /shebang-regex/1.0.0:
     resolution: {integrity: sha512-wpoSFAxys6b2a2wHZ1XpDSgD7N9iVjg29Ph9uV/uaP9Ex/KXlkTZTeddxDPSYQpgvzKLGJke2UU0AzoGCjNIvQ==}
     engines: {node: '>=0.10.0'}
+    requiresBuild: true
     dev: true
 
   /shebang-regex/3.0.0:
