@@ -22,7 +22,7 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.1",
     "concurrently": "^7.6.0",
-    "rimraf": "^4.3.1"
+    "rimraf": "^5.0.0"
   },
   "dependencies": {
     "fs-extra": "^11.1.0"
